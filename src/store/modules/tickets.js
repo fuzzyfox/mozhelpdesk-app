@@ -9,8 +9,13 @@ export const state = initState()
 
 export const mutations = {
   [mutationType.SAVE_TICKET](state, ticket) {
-    Object.assign(ticket, { mozhelp: { reply: '' } }, ticket)
-    Vue.set(state, ticket._id, ticket)
+    const existingTicket = state[ticket._id] || {}
+
+    Vue.set(
+      state,
+      ticket._id,
+      Object.assign({ mozhelp: { reply: '' } }, existingTicket, ticket)
+    )
   }
 }
 
