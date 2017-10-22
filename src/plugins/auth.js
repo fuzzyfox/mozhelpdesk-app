@@ -29,7 +29,7 @@ export const JWT_REFRESH_OFFSET = 60000 // 1min
 export const authenticate = (() => {
   let _authenticatePromise = null
 
-  return () => {
+  return http => {
     if (_authenticatePromise) {
       return _authenticatePromise
     }
@@ -61,7 +61,26 @@ export const authenticate = (() => {
           store
             .dispatch('setToken', { token: data.success })
             .then(user => resolve(user))
-            .then(() => {})
+            .then(() => {
+              if (http) {
+                const timeout =
+                  store.getters.jwt.exp * 1000 - JWT_REFRESH_OFFSET - Date.now()
+                console.log('auto token refresh in %dms', timeout)
+                return setTimeout(
+                  () =>
+                    http
+                      .get('auth/refresh')
+                      .then(response => response.json())
+                      .then(({ token }) =>
+                        store.dispatch('setToken', {
+                          token,
+                          skipFetchUser: true
+                        })
+                      ),
+                  timeout
+                )
+              }
+            })
         },
         false
       )
@@ -100,11 +119,11 @@ export const authPlugin = {
   install(Vue, options) {
     Vue.http.interceptors.push((request, next) => {
       const jwt = store.getters.jwt
-      if (!jwt) {
+      if (!jwt || request.url === 'auth/refresh') {
         return next()
       }
 
-      if (jwt.exp - JWT_REFRESH_OFFSET > Date.now()) {
+      if (jwt.exp * 1000 - JWT_REFRESH_OFFSET > Date.now()) {
         return Vue.http
           .get('auth/refresh')
           .then(response => response.json())
@@ -114,7 +133,7 @@ export const authPlugin = {
           .then(() => next(), () => next())
       }
 
-      if (jwt.exp >= Date.now()) {
+      if (jwt.exp * 1000 >= Date.now()) {
         return store
           .dispatch('setToken', { token: null, skipFetchUser: true })
           .then(() => next(), () => next())
@@ -133,12 +152,31 @@ export const authPlugin = {
 
       next(response => {
         if (response.status === 401) {
-          return this.authenticate().then(() => Vue.http(request))
+          return this.authenticate(Vue.http).then(() => Vue.http(request))
         }
       })
     })
 
     Vue.prototype.$auth = Vue.auth = this
+
+    if (store.getters.jwt) {
+      const timeout =
+        store.getters.jwt.exp * 1000 - JWT_REFRESH_OFFSET - Date.now()
+      console.log('auto token refresh in %dms', timeout)
+      return setTimeout(
+        () =>
+          Vue.http
+            .get('auth/refresh')
+            .then(response => response.json())
+            .then(({ token }) =>
+              store.dispatch('setToken', {
+                token,
+                skipFetchUser: true
+              })
+            ),
+        timeout
+      )
+    }
   },
 
   /**
