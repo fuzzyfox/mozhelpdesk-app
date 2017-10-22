@@ -1,3 +1,14 @@
+/**
+ * @file Various utility methods for use across the app
+ * @author William Duyck <fuzzyfox0@gmail.com>
+ */
+
+/**
+ * Get the name of the icon that represents the given helpdesk status
+ *
+ * @param  {string} status Helpdesk status
+ * @return {string}        Icon name
+ */
 export const mozhelpStatusToIcon = status =>
   ({
     NEW: 'check_box_outline_blank',
@@ -5,8 +16,14 @@ export const mozhelpStatusToIcon = status =>
     IN_PROGRESS: 'indeterminate_check_box',
     COMPLETE: 'check_box',
     SENT: 'send'
-  }[status])
+  }[status.toUpperCase()])
 
+/**
+ * Get the color of the given helpdesk status
+ *
+ * @param  {string} status Helpdesk status
+ * @return {string}        Color
+ */
 export const mozhelpStatusToColor = status =>
   ({
     NEW: 'red',
@@ -14,4 +31,4 @@ export const mozhelpStatusToColor = status =>
     IN_PROGRESS: 'yellow',
     COMPLETE: 'green',
     SENT: 'blue'
-  }[status])
+  }[status.toUpperCase()])

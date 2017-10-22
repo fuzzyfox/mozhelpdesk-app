@@ -2,13 +2,13 @@ import store from '@/store'
 
 /**
  * Auth popup window
- * @type {String}
+ * @type {string}
  */
 export const AUTH_POPUP_URL = process.env.API_ROOT + '/auth/twitter'
 
 /**
  * Auth refresh endpoint
- * @type {String}
+ * @type {string}
  */
 export const AUTH_REFRESH_URL = process.env.API_ROOT + '/auth/refresh'
 
@@ -17,7 +17,7 @@ export const AUTH_REFRESH_URL = process.env.API_ROOT + '/auth/refresh'
  *
  * Ammount of time before JWT expiry to consider attempting a token refresh
  *
- * @type {Number}
+ * @type {number}
  */
 export const JWT_REFRESH_OFFSET = 60000 // 1min
 

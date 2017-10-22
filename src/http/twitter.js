@@ -99,6 +99,8 @@ export const reply = (tweet, status, opts = {}) =>
 /**
  * Search Twitter
  *
+ * @see https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets
+ *
  * @param  {string}             searchTerm  Search term
  * @param  {object}             [params={}] Additional params to pass to the twitter API
  * @return {Promise.<Response>}             Promise of a Response
