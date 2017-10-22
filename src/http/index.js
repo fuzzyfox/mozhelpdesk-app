@@ -1,3 +1,10 @@
+/**
+ * @file Configures vue-resource and exports utility methods for use with the
+ *       helpdesk API
+ *
+ * @author William Duyck <fuzzyfox0@gmail.com>
+ */
+
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 
