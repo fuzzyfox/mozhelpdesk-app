@@ -1,9 +1,9 @@
 import { twitter } from '@/libs/io'
 
-import { SAVE_TWEET } from '@/store/mutation-types'
+import { SAVE_TICKET } from '@/store/mutation-types'
 
 export const twitterStreamPlugin = store => {
-  twitter.on('save', tweet => store.commit(SAVE_TWEET, tweet))
+  twitter.on('save', ticket => store.commit(SAVE_TICKET, ticket))
 }
 
 export default twitterStreamPlugin

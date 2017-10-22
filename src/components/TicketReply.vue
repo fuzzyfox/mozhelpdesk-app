@@ -1,5 +1,5 @@
 <template lang="html">
-  <v-card class="mh-tweet-reply" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme">
+  <v-card class="mh-ticket-reply" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme">
     <v-card-text>
       <v-text-field
         name="input-7-1"
@@ -22,7 +22,7 @@
 
 <script>
   export default {
-    name: 'mh-tweet-reply',
+    name: 'mh-ticket-reply',
 
     data() {
       return {
@@ -33,11 +33,11 @@
     },
 
     props: {
-      tweet: Object
+      ticket: Object
     },
 
     created() {
-      this.reply.text = `.@${this.tweet.user.screen_name} `
+      this.reply.text = `.@${this.ticket.user.screen_name} `
     },
 
     activated() {

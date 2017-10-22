@@ -16,7 +16,7 @@
             </v-layout>
           </v-card>
 
-          <mh-tweet-list :tweets="results"></mh-tweet-list>
+          <mh-ticket-list :tickets="results"></mh-ticket-list>
 
           <v-btn v-if="results.length" @click="loadMore" class="primary">Load more</v-btn>
         </v-flex>
@@ -26,14 +26,14 @@
 </template>
 
 <script>
-  import MhTweetList from '@/components/TweetList'
+  import MhTicketList from '@/components/TicketList'
   import http from '@/http'
 
   export default {
     name: 'mh-dashboard-view',
 
     components: {
-      MhTweetList
+      MhTicketList
     },
 
     data() {
@@ -53,12 +53,12 @@
               .map(status => Object.assign(status, { mozhelp: { reply: '' } }))
               .map(status => {
                 if (status._id) {
-                  const tweet = Object.assign(
-                    this.$store.getters.getTweetById(status._id) || {},
+                  const ticket = Object.assign(
+                    this.$store.getters.getTicketById(status._id) || {},
                     status
                   )
-                  this.$store.dispatch('saveTweet', tweet)
-                  return tweet
+                  this.$store.dispatch('saveTicket', ticket)
+                  return ticket
                 }
 
                 return status
@@ -82,12 +82,12 @@
               .map(status => Object.assign(status, { mozhelp: { reply: '' } }))
               .map(status => {
                 if (status._id) {
-                  const tweet = Object.assign(
-                    this.$store.getters.getTweetById(status._id) || {},
+                  const ticket = Object.assign(
+                    this.$store.getters.getTicketById(status._id) || {},
                     status
                   )
-                  this.$store.dispatch('saveTweet', tweet)
-                  return tweet
+                  this.$store.dispatch('saveTicket', ticket)
+                  return ticket
                 }
 
                 return status
@@ -107,11 +107,11 @@
 
 <style lang="scss">
   .mh-dashboard-view {
-    .tweet-expander > .expansion-panel__header {
+    .ticket-expander > .expansion-panel__header {
       padding: 1rem;
     }
 
-    .tweet-expander > .expansion-panel__header > .header__icon {
+    .ticket-expander > .expansion-panel__header > .header__icon {
       display: none;
     }
   }

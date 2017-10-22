@@ -1,5 +1,5 @@
 import auth from './auth'
 import ui from './ui'
-import tweets from './tweets'
+import tickets from './tickets'
 
-export default { auth, ui, tweets }
+export default { auth, ui, tickets }

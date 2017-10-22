@@ -28,8 +28,8 @@ export const SET_AUTH_USER = 'SET_AUTH_USER'
 
 /*
 |------------------------------------------------------------------------------
-| Twitter Mutations
+| Ticket Mutations
 |------------------------------------------------------------------------------
 |
 */
-export const SAVE_TWEET = 'SAVE_TWEET'
+export const SAVE_TICKET = 'SAVE_TICKET'

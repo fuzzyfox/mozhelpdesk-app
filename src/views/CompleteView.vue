@@ -2,33 +2,33 @@
   <v-content class="mh-dashboard-view">
     <v-container fluid fill-height>
       <v-layout>
-          <mh-tweet-list :tweets="$store.getters.getTweetsByStatus('complete')"></mh-tweet-list>
+          <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('complete')"></mh-ticket-list>
       </v-layout>
     </v-container>
   </v-content>
 </template>
 
 <script>
-  import MhTweetList from '@/components/TweetList'
+  import MhTicketList from '@/components/TicketList'
   import http from '@/http'
 
   export default {
     name: 'mh-dashboard-view',
 
     components: {
-      MhTweetList
+      MhTicketList
     },
 
     data() {
       return {
-        tweets: [],
+        tickets: [],
         results: []
       }
     },
 
     methods: {
-      loadTweets() {
-        return http.tweets
+      loadTickets() {
+        return http.tickets
           .list()
           .then(res => res.json())
           .then(({ docs }) => {
@@ -36,7 +36,7 @@
               Object.assign(status, { mozhelp: { reply: '' } })
             )
             docs.forEach(
-              status => status._id && this.$store.dispatch('saveTweet', status)
+              status => status._id && this.$store.dispatch('saveTicket', status)
             )
             return docs
           })
@@ -44,8 +44,8 @@
     },
 
     created() {
-      if (!this.tweets.length) {
-        this.loadTweets()
+      if (!this.tickets.length) {
+        this.loadTickets()
       }
     }
   }
@@ -53,11 +53,11 @@
 
 <style lang="scss">
   .mh-dashboard-view {
-    .tweet-expander > .expansion-panel__header {
+    .ticket-expander > .expansion-panel__header {
       padding: 1rem;
     }
 
-    .tweet-expander > .expansion-panel__header > .header__icon {
+    .ticket-expander > .expansion-panel__header > .header__icon {
       display: none;
     }
   }
