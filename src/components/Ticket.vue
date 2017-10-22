@@ -15,16 +15,16 @@
           <v-icon :color="mozhelpStatusToColor(ticket.mozhelp_status)">{{ mozhelpStatusToIcon(ticket.mozhelp_status) || 'error_outline' }}</v-icon>
         </v-btn>
         <v-list>
-          <v-list-tile @click="updateStatus(tweet, 'new')">
+          <v-list-tile @click="updateStatus(ticket, 'new')">
             <v-list-tile-title><v-icon :color="mozhelpStatusToColor('new')">{{ mozhelpStatusToIcon('new') }}</v-icon> Mark As New</v-list-tile-title>
           </v-list-tile>
-          <v-list-tile @click="updateStatus(tweet, 'in_progress')">
+          <v-list-tile @click="updateStatus(ticket, 'in_progress')">
             <v-list-tile-title><v-icon :color="mozhelpStatusToColor('in_progress')">{{ mozhelpStatusToIcon('in_progress') }}</v-icon> Mark In-Progress</v-list-tile-title>
           </v-list-tile>
-          <v-list-tile @click="updateStatus(tweet, 'complete')">
+          <v-list-tile @click="updateStatus(ticket, 'complete')">
             <v-list-tile-title><v-icon :color="mozhelpStatusToColor('complete')">{{ mozhelpStatusToIcon('complete') }}</v-icon> Mark Complete</v-list-tile-title>
           </v-list-tile>
-          <v-list-tile @click="updateStatus(tweet, 'no_action_required')">
+          <v-list-tile @click="updateStatus(ticket, 'no_action_required')">
             <v-list-tile-title><v-icon :color="mozhelpStatusToColor('no_action_required')">{{ mozhelpStatusToIcon('no_action_required') }}</v-icon> No Action Required</v-list-tile-title>
           </v-list-tile>
         </v-list>
