@@ -27,6 +27,8 @@
   },
   "dependencies": {
     "jsonwebtoken": "^8.1.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.19.1",
     "socket.io-client": "^2.0.3",
     "store": "^2.0.12",
     "vue": "^2.4.2",

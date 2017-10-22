@@ -1,13 +1,37 @@
 <template lang="html">
-  <v-layout class="mh-ticket">
-    <v-avatar class="mr-3">
-      <img :src="ticket.user.profile_image_url_https"/>
-    </v-avatar>
+  <div class="mh-ticket">
+    <v-layout>
+      <v-avatar class="mr-3">
+        <img :src="ticket.user.profile_image_url_https"/>
+      </v-avatar>
 
-    <v-flex>
-      <strong>{{ ticket.user.name || ticket.user.screen_name }}</strong>
-      <p v-html="ticket.text"></p>
+      <v-flex>
+        <strong>{{ ticket.user.name || ticket.user.screen_name }}</strong>
+        <p v-html="ticket.text"></p>
+      </v-flex>
 
+      <v-menu bottom left @click.native.stop>
+        <v-btn icon slot="activator">
+          <v-icon :color="mozhelpStatusToColor(ticket.mozhelp_status)">{{ mozhelpStatusToIcon(ticket.mozhelp_status) || 'error_outline' }}</v-icon>
+        </v-btn>
+        <v-list>
+          <v-list-tile @click="updateStatus(tweet, 'new')">
+            <v-list-tile-title><v-icon :color="mozhelpStatusToColor('new')">{{ mozhelpStatusToIcon('new') }}</v-icon> Mark As New</v-list-tile-title>
+          </v-list-tile>
+          <v-list-tile @click="updateStatus(tweet, 'in_progress')">
+            <v-list-tile-title><v-icon :color="mozhelpStatusToColor('in_progress')">{{ mozhelpStatusToIcon('in_progress') }}</v-icon> Mark In-Progress</v-list-tile-title>
+          </v-list-tile>
+          <v-list-tile @click="updateStatus(tweet, 'complete')">
+            <v-list-tile-title><v-icon :color="mozhelpStatusToColor('complete')">{{ mozhelpStatusToIcon('complete') }}</v-icon> Mark Complete</v-list-tile-title>
+          </v-list-tile>
+          <v-list-tile @click="updateStatus(tweet, 'no_action_required')">
+            <v-list-tile-title><v-icon :color="mozhelpStatusToColor('no_action_required')">{{ mozhelpStatusToIcon('no_action_required') }}</v-icon> No Action Required</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+    </v-layout>
+
+    <v-layout @click.stop class="mh-ticket-actions">
       <template v-if="ticket.twid || ticket.id_str">
         <v-btn flat icon color="green" @click.stop="toggleRetweet(ticket)">
           <v-icon v-if="ticket.retweeted"  color="green">autorenew</v-icon>
@@ -20,51 +44,89 @@
         </v-btn>
       </template>
 
-      <template v-if="(ticket.mozhelp_notes || []).length">
-        <v-btn flat icon color="orange" @click.stop>
+      <v-dialog v-model="isNotesModalOpen" max-width="50%">
+        <v-btn v-if="(ticket.mozhelp_notes || []).length" slot="activator" flat icon color="orange">
           <v-badge right>
             <span slot="badge">{{ ticket.mozhelp_notes.length }}</span>
-            <v-icon>note_add</v-icon>
+            <v-icon>description</v-icon>
           </v-badge>
         </v-btn>
-      </template>
-      <v-btn v-else flat icon color="orange" @click.stop>
-        <v-icon>note_add</v-icon>
-      </v-btn>
+        <v-btn v-else slot="activator" flat icon color="orange">
+          <v-icon>note_add</v-icon>
+        </v-btn>
+
+        <v-card>
+          <v-card-title>
+            <span class="headline">Notes</span>
+          </v-card-title>
+
+          <v-card-text>
+            <template v-for="note in ticket.mozhelp_notes">
+              <v-layout :key="note._id" class="mb-3">
+                <v-avatar class="mr-3">
+                  <img :src="note.user.profile.picture"/>
+                </v-avatar>
+
+                <v-flex>
+                  {{ note.note }}
+                </v-flex>
+
+                <v-chip label>{{ momentFromNow(note.createdAt) }}</v-chip>
+              </v-layout>
+              <v-divider class="mb-3"></v-divider>
+            </template>
+
+            <v-card tag="form" @submit.native.prevent="onNoteSubmit" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme">
+              <v-card-text>
+                <v-text-field
+                  name="input-7-1"
+                  label="New Note"
+                  multi-line
+                  v-model="newNote"
+                  :light="$store.state.ui.useDarkTheme"
+                  :dark="!$store.state.ui.useDarkTheme">
+                </v-text-field>
+
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="primary" type="submit">Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat @click="isNotesModalOpen = false">Close</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
       <v-btn v-if="ticket.twid || ticket.id_str" flat icon @click.stop :href="`https://twitter.com/statuses/${ticket.id_str}`" target="_blank">
         <v-icon>open_in_new</v-icon>
       </v-btn>
-    </v-flex>
 
-    <v-menu bottom left @click.native.stop>
-      <v-btn icon slot="activator">
-        <v-icon :color="mozhelpStatusToColor(ticket.mozhelp_status)">{{ mozhelpStatusToIcon(ticket.mozhelp_status) || 'error_outline' }}</v-icon>
-      </v-btn>
-      <v-list>
-        <v-list-tile @click="updateStatus(tweet, 'new')">
-          <v-list-tile-title><v-icon :color="mozhelpStatusToColor('new')">{{ mozhelpStatusToIcon('new') }}</v-icon> Mark As New</v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile @click="updateStatus(tweet, 'in_progress')">
-          <v-list-tile-title><v-icon :color="mozhelpStatusToColor('in_progress')">{{ mozhelpStatusToIcon('in_progress') }}</v-icon> Mark In-Progress</v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile @click="updateStatus(tweet, 'complete')">
-          <v-list-tile-title><v-icon :color="mozhelpStatusToColor('complete')">{{ mozhelpStatusToIcon('complete') }}</v-icon> Mark Complete</v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile @click="updateStatus(tweet, 'no_action_required')">
-          <v-list-tile-title><v-icon :color="mozhelpStatusToColor('no_action_required')">{{ mozhelpStatusToIcon('no_action_required') }}</v-icon> No Action Required</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-menu>
-  </v-layout>
+      <v-spacer></v-spacer>
+
+      <v-chip label>{{ momentFromNow(ticket.created_at) }}</v-chip>
+    </v-layout>
+  </div>
 </template>
 
 <script>
   import http from '@/http'
   import { mozhelpStatusToIcon, mozhelpStatusToColor } from '@/libs/utils'
+  import moment from 'moment'
 
   export default {
     name: 'mh-ticket',
+
+    data() {
+      return {
+        isNotesModalOpen: false,
+        newNote: ''
+      }
+    },
 
     props: {
       ticket: Object
@@ -73,6 +135,9 @@
     methods: {
       mozhelpStatusToIcon,
       mozhelpStatusToColor,
+      momentFromNow(timestamp) {
+        return moment(timestamp).fromNow()
+      },
       toggleRetweet(ticket) {
         return http.twitter
           .toggleRetweet(ticket)
@@ -94,10 +159,31 @@
         }
 
         return http.tickets.updateStatus(ticket._id, status)
+      },
+      onNoteSubmit() {
+        return http.tickets
+          .createNote(this.ticket._id, this.newNote)
+          .then(res => res.json())
+          .then(({ _id }) => {
+            this.ticket.mozhelp_notes.push({
+              _id,
+              note: this.newNote,
+              createdAt: Date.now(),
+              user: this.$store.state.auth.user
+            })
+
+            this.newNote = ''
+          })
       }
     }
   }
 </script>
 
 <style lang="scss">
+  .mh-ticket {
+    & > .mh-ticket-actions {
+      cursor: default;
+      align-items: center;
+    }
+  }
 </style>
