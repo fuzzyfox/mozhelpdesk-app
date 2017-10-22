@@ -2,7 +2,9 @@
   <v-content class="mh-dashboard-view">
     <v-container fluid fill-height>
       <v-layout>
+        <v-flex md6 offset-md3>
           <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('complete')"></mh-ticket-list>
+        </v-flex>
       </v-layout>
     </v-container>
   </v-content>

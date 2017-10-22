@@ -71,7 +71,10 @@
                   {{ note.note }}
                 </v-flex>
 
-                <v-chip label>{{ momentFromNow(note.createdAt) }}</v-chip>
+                <v-tooltip top>
+                  <v-chip label slot="activator">{{ moment(note.createdAt).fromNow() }}</v-chip>
+                  <span>{{ moment(note.createdAt).format('ddd Do MMM YYYY @ HH:mm') }}</span>
+                </v-tooltip>
               </v-layout>
               <v-divider class="mb-3"></v-divider>
             </template>
@@ -108,7 +111,10 @@
 
       <v-spacer></v-spacer>
 
-      <v-chip label>{{ momentFromNow(ticket.created_at) }}</v-chip>
+      <v-tooltip top>
+        <v-chip label slot="activator">{{ moment(ticket.created_at).fromNow() }}</v-chip>
+        <span>{{ moment(ticket.created_at).format('ddd Do MMM YYYY @ HH:mm') }}</span>
+      </v-tooltip>
     </v-layout>
   </div>
 </template>
@@ -133,11 +139,9 @@
     },
 
     methods: {
+      moment,
       mozhelpStatusToIcon,
       mozhelpStatusToColor,
-      momentFromNow(timestamp) {
-        return moment(timestamp).fromNow()
-      },
       toggleRetweet(ticket) {
         return http.twitter
           .toggleRetweet(ticket)

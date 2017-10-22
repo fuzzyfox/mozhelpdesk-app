@@ -51,5 +51,12 @@
   }
 </script>
 
-<style lang="css">
+<style lang="scss">
+  .ticket-expander > .expansion-panel__header {
+    padding: 1rem;
+  }
+
+  .ticket-expander > .expansion-panel__header > .header__icon {
+    display: none;
+  }
 </style>

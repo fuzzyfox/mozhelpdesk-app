@@ -89,7 +89,7 @@
 
 <style lang="styl">
   main {
-    /*max-height: 100vh;
-    overflow-y: auto;*/
+    max-height: 100vh;
+    overflow: auto;
   }
 </style>

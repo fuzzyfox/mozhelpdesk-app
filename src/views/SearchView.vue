@@ -1,6 +1,6 @@
 <template lang="html">
-  <v-content class="mh-dashboard-view">
-    <v-container fluid fill-height>
+  <v-content class="mh-search-view">
+    <v-container fluid>
       <v-layout>
         <v-flex md6 offset-md3>
           <v-card class="pa-3" tag="form"
@@ -16,7 +16,7 @@
             </v-layout>
           </v-card>
 
-          <mh-ticket-list :tickets="results"></mh-ticket-list>
+          <mh-ticket-list :tickets="results" :orders="['desc']"></mh-ticket-list>
 
           <v-btn v-if="results.length" @click="loadMore" class="primary">Load more</v-btn>
         </v-flex>
@@ -48,7 +48,7 @@
         return http.twitter
           .search(searchTerm, params)
           .then(response => response.json())
-          .then(({ statuses }) =>
+          .then(({ statuses = [] }) =>
             statuses
               .map(status => Object.assign(status, { mozhelp: { reply: '' } }))
               .map(status => {
@@ -106,13 +106,6 @@
 </script>
 
 <style lang="scss">
-  .mh-dashboard-view {
-    .ticket-expander > .expansion-panel__header {
-      padding: 1rem;
-    }
-
-    .ticket-expander > .expansion-panel__header > .header__icon {
-      display: none;
-    }
+  .mh-search-view {
   }
 </style>
