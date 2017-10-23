@@ -3,6 +3,7 @@
     <v-container fluid>
       <v-layout>
         <v-flex md6 class="ticket-column">
+        <h2>New tweets</h2>
           <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('new').slice(0,100)"></mh-ticket-list>
         </v-flex>
 

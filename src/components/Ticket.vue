@@ -33,79 +33,92 @@
 
     <v-layout @click.stop class="mh-ticket-actions">
       <template v-if="ticket.twid || ticket.id_str">
-        <v-btn flat icon color="green" @click.stop="toggleRetweet(ticket)">
+      <v-tooltip top>
+        <v-btn flat icon color="green" @click.stop="toggleRetweet(ticket)" slot="activator">
           <v-icon v-if="ticket.retweeted"  color="green">autorenew</v-icon>
           <v-icon v-else>autorenew</v-icon>
         </v-btn>
+        <span>Retweet this as you</span>
+        </v-tooltip>
 
-        <v-btn flat icon color="pink" @click.stop="toggleFavorite(ticket)">
+      <v-tooltip top>
+        <v-btn flat icon color="pink" @click.stop="toggleFavorite(ticket)" slot="activator">
           <v-icon v-if="ticket.favorited" color="pink">favorite</v-icon>
           <v-icon v-else>favorite_border</v-icon>
         </v-btn>
+        <span>Like this as you</span>
+        </v-tooltip>
       </template>
 
-      <v-dialog v-model="isNotesModalOpen" max-width="50%">
-        <v-btn v-if="(ticket.mozhelp_notes || []).length" slot="activator" flat icon color="orange">
-          <v-badge right>
-            <span slot="badge">{{ ticket.mozhelp_notes.length }}</span>
-            <v-icon>description</v-icon>
-          </v-badge>
-        </v-btn>
-        <v-btn v-else slot="activator" flat icon color="orange">
-          <v-icon>note_add</v-icon>
-        </v-btn>
+      <v-tooltip top>
+              <v-dialog v-model="isNotesModalOpen" max-width="50%" slot="activator">
+                <v-btn v-if="(ticket.mozhelp_notes || []).length" slot="activator" flat icon color="orange">
+                  <v-badge right>
+                    <span slot="badge">{{ ticket.mozhelp_notes.length }}</span>
+                    <v-icon>description</v-icon>
+                  </v-badge>
+                </v-btn>
+                <v-btn v-else slot="activator" flat icon color="orange">
+                  <v-icon>note_add</v-icon>
+                </v-btn>
 
-        <v-card>
-          <v-card-title>
-            <span class="headline">Notes</span>
-          </v-card-title>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">Notes</span>
+                  </v-card-title>
 
-          <v-card-text>
-            <template v-for="note in ticket.mozhelp_notes">
-              <v-layout :key="note._id" class="mb-3">
-                <v-avatar class="mr-3">
-                  <img :src="note.user.profile.picture"/>
-                </v-avatar>
+                  <v-card-text>
+                    <template v-for="note in ticket.mozhelp_notes">
+                      <v-layout :key="note._id" class="mb-3">
+                        <v-avatar class="mr-3">
+                          <img :src="note.user.profile.picture"/>
+                        </v-avatar>
 
-                <v-flex v-html="note.note.replace(/\n/ig, '<br>')"></v-flex>
+                        <v-flex v-html="note.note.replace(/\n/ig, '<br>')"></v-flex>
 
-                <v-tooltip top>
-                  <v-chip label slot="activator"><mh-relative-time :timestamp="note.createdAt"></mh-relative-time></v-chip>
-                  <span>{{ moment(note.createdAt).format('ddd Do MMM YYYY @ HH:mm') }}</span>
-                </v-tooltip>
-              </v-layout>
-              <v-divider class="mb-3"></v-divider>
-            </template>
+                        <v-tooltip top>
+                          <v-chip label slot="activator"><mh-relative-time :timestamp="note.createdAt"></mh-relative-time></v-chip>
+                          <span>{{ moment(note.createdAt).format('ddd Do MMM YYYY @ HH:mm') }}</span>
+                        </v-tooltip>
+                      </v-layout>
+                      <v-divider class="mb-3"></v-divider>
+                    </template>
 
-            <v-card tag="form" @submit.native.prevent="onNoteSubmit" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme">
-              <v-card-text>
-                <v-text-field
-                  name="input-7-1"
-                  label="New Note"
-                  multi-line
-                  v-model="newNote"
-                  :light="$store.state.ui.useDarkTheme"
-                  :dark="!$store.state.ui.useDarkTheme">
-                </v-text-field>
+                    <v-card tag="form" @submit.native.prevent="onNoteSubmit" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme">
+                      <v-card-text>
+                        <v-text-field
+                          name="input-7-1"
+                          label="New Note"
+                          multi-line
+                          v-model="newNote"
+                          :light="$store.state.ui.useDarkTheme"
+                          :dark="!$store.state.ui.useDarkTheme">
+                        </v-text-field>
 
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn class="primary" type="submit">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-card-text>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn class="primary" type="submit">Save</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-card-text>
 
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn flat @click="isNotesModalOpen = false">Close</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn flat @click="isNotesModalOpen = false">Close</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <span v-if="(ticket.mozhelp_notes || []).length"> Show ticket notes</span>
+              <span v-else>Add ticket note</span>
+              </v-tooltip>
 
-      <v-btn v-if="ticket.twid || ticket.id_str" flat icon @click.stop :href="`https://twitter.com/statuses/${ticket.id_str}`" target="_blank">
+      <v-tooltip v-if="ticket.twid || ticket.id_str" top>
+      <v-btn slot="activator" flat icon @click.stop :href="`https://twitter.com/statuses/${ticket.id_str}`" target="_blank">
         <v-icon>open_in_new</v-icon>
       </v-btn>
+      <span>Open Tweet in new window</span>
+      </v-tooltip>
 
       <v-spacer></v-spacer>
 
@@ -164,7 +177,11 @@
           )
         }
 
-        return http.tickets.updateStatus(ticket._id, status)
+        return http.tickets.updateStatus(ticket._id, status).then(() => {
+          ticket = Object.assign({}, ticket)
+          ticket.mozhelp_status = status.toUpperCase()
+          this.$store.dispatch('saveTicket', ticket)
+        })
       },
       onNoteSubmit() {
         return http.tickets
