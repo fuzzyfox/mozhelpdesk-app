@@ -156,10 +156,9 @@
       },
       updateStatus(ticket, status) {
         if (!ticket._id) {
-          return http.tickets.create({
-            ...ticket,
-            mozhelp_status: status.toUpperCase()
-          })
+          return http.tickets.create(
+            Object.assign({}, ticket, { mozhelp_status: status.toUpperCase() })
+          )
         }
 
         return http.tickets.updateStatus(ticket._id, status)

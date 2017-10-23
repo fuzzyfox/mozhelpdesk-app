@@ -90,11 +90,13 @@ export const toggleFavorite = tweet =>
  * @return {Promse.<Response>}            Promise of a Response
  */
 export const reply = (tweet, status, opts = {}) =>
-  Vue.http.post(`twitter/statuses/update`, {
-    ...opts,
-    status,
-    in_reply_to_status_id: tweet.twid || tweet.id_str
-  })
+  Vue.http.post(
+    `twitter/statuses/update`,
+    Object.assign({}, opts, {
+      status,
+      in_reply_to_status_id: tweet.twid || tweet.id_str
+    })
+  )
 
 /**
  * Search Twitter
@@ -107,5 +109,5 @@ export const reply = (tweet, status, opts = {}) =>
  */
 export const search = (searchTerm, params = {}) =>
   Vue.http.get(`twitter/search/tweets`, {
-    params: { ...params, q: searchTerm }
+    params: Object.assign({}, params, { q: searchTerm })
   })
