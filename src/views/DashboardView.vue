@@ -3,11 +3,11 @@
     <v-container fluid>
       <v-layout>
         <v-flex md6 class="ticket-column">
-          <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('new')"></mh-ticket-list>
+          <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('new').slice(0,100)"></mh-ticket-list>
         </v-flex>
 
         <v-flex md6 class="ticket-column">
-          <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('in_progress')"></mh-ticket-list>
+          <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('in_progress').slice(0,100)"></mh-ticket-list>
         </v-flex>
       </v-layout>
     </v-container>
@@ -42,6 +42,7 @@
     & > .container > .layout > .ticket-column {
       max-height: 100%;
       overflow-y: auto;
+      overflow-x: hidden;
     }
   }
 </style>

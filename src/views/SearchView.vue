@@ -30,7 +30,7 @@
   import http from '@/http'
 
   export default {
-    name: 'mh-dashboard-view',
+    name: 'mh-search-view',
 
     components: {
       MhTicketList

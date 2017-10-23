@@ -38,6 +38,19 @@
           </v-list-tile-content>
         </v-list-tile>
 
+        <v-divider></v-divider>
+
+        <v-list-tile @click.stop="sync">
+          <v-list-tile-action>
+            <v-icon>sync</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Sync with server</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-divider></v-divider>
+
         <v-list-tile @click.stop="logout">
           <v-list-tile-action>
             <v-icon>exit_to_app</v-icon>
@@ -74,6 +87,11 @@
         items: [
           { icon: 'dashboard', title: 'Dashboard', route: { name: 'Dashboard' } },
           { icon: 'check_box', title: 'Complete', route: { name: 'Complete' } },
+          {
+            icon: 'visibility_off',
+            title: 'No Action Required',
+            route: { name: 'No Action Required' }
+          },
           { icon: 'search', title: 'Search', route: { name: 'Search' } },
           { icon: 'settings', title: 'Settings', route: { name: 'Settings' } }
         ]
@@ -85,17 +103,19 @@
         this.$store.dispatch('logout').then(() => this.$router.push('/'))
       },
       sync() {
-        return http.tickets
-          .list()
-          .then(res => res.json())
-          .then(({ docs }) => {
-            docs.forEach(doc => this.$store.dispatch('saveTicket', doc))
-          })
-      }
-    },
+        const self = this
+        let offset = 0
+        return http.tickets.list().then(function handleListResponse(res) {
+          return res.json().then(res => {
+            res.docs.forEach(doc => self.$store.dispatch('saveTicket', doc))
 
-    created() {
-      this.sync()
+            if (res.offset + res.docs.length < res.total) {
+              offset += res.limit
+              return http.tickets.list({ offset }).then(handleListResponse)
+            }
+          })
+        })
+      }
     }
   }
 </script>

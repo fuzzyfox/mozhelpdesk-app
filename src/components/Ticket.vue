@@ -67,12 +67,10 @@
                   <img :src="note.user.profile.picture"/>
                 </v-avatar>
 
-                <v-flex>
-                  {{ note.note }}
-                </v-flex>
+                <v-flex v-html="note.note.replace(/\n/ig, '<br>')"></v-flex>
 
                 <v-tooltip top>
-                  <v-chip label slot="activator">{{ moment(note.createdAt).fromNow() }}</v-chip>
+                  <v-chip label slot="activator"><mh-relative-time :timestamp="note.createdAt"></mh-relative-time></v-chip>
                   <span>{{ moment(note.createdAt).format('ddd Do MMM YYYY @ HH:mm') }}</span>
                 </v-tooltip>
               </v-layout>
@@ -112,7 +110,7 @@
       <v-spacer></v-spacer>
 
       <v-tooltip top>
-        <v-chip label slot="activator">{{ moment(ticket.created_at).fromNow() }}</v-chip>
+        <v-chip label slot="activator"><mh-relative-time :timestamp="ticket.created_at"></mh-relative-time></v-chip>
         <span>{{ moment(ticket.created_at).format('ddd Do MMM YYYY @ HH:mm') }}</span>
       </v-tooltip>
     </v-layout>
@@ -122,10 +120,15 @@
 <script>
   import http from '@/http'
   import { mozhelpStatusToIcon, mozhelpStatusToColor } from '@/libs/utils'
+  import MhRelativeTime from '@/components/RelativeTime'
   import moment from 'moment'
 
   export default {
     name: 'mh-ticket',
+
+    components: {
+      MhRelativeTime
+    },
 
     data() {
       return {

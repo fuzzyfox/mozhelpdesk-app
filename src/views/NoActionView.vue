@@ -1,9 +1,9 @@
 <template lang="html">
-  <v-content class="mh-complete-view">
+  <v-content class="mh-notaction-view">
     <v-container fluid fill-height>
       <v-layout>
         <v-flex md6 offset-md3>
-          <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('complete')"></mh-ticket-list>
+          <mh-ticket-list :tickets="$store.getters.getTicketsByStatus('no_action_required')"></mh-ticket-list>
         </v-flex>
       </v-layout>
     </v-container>
@@ -15,7 +15,7 @@
   import http from '@/http'
 
   export default {
-    name: 'mh-complete-view-view',
+    name: 'mh-notaction-view-view',
 
     components: {
       MhTicketList
@@ -54,5 +54,5 @@
 </script>
 
 <style lang="scss">
-  .mh-complete-view {}
+  .mh-notaction-view {}
 </style>

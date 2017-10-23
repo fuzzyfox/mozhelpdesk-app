@@ -5,6 +5,7 @@ import DashboardView from '@/views/DashboardView'
 import SearchView from '@/views/SearchView'
 import SettingsView from '@/views/SettingsView'
 import CompleteView from '@/views/CompleteView'
+import NoActionView from '@/views/NoActionView'
 
 Vue.use(Router)
 
@@ -30,6 +31,11 @@ export default new Router({
       path: '/complete',
       name: 'Complete',
       component: CompleteView
+    },
+    {
+      path: '/noaction',
+      name: 'No Action Required',
+      component: NoActionView
     }
   ]
 })
