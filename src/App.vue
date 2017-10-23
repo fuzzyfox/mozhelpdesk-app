@@ -62,6 +62,7 @@
 </template>
 
 <script>
+  import http from '@/http'
   import MhLoginView from '@/views/LoginView'
 
   export default {
@@ -82,7 +83,19 @@
     methods: {
       logout() {
         this.$store.dispatch('logout').then(() => this.$router.push('/'))
+      },
+      sync() {
+        return http.tickets
+          .list()
+          .then(res => res.json())
+          .then(({ docs }) => {
+            docs.forEach(doc => this.$store.dispatch('saveTicket', doc))
+          })
       }
+    },
+
+    created() {
+      this.sync()
     }
   }
 </script>
