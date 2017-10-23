@@ -1,5 +1,5 @@
 <template lang="html">
-  <v-card class="mh-ticket-reply" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme">
+  <v-card class="mh-ticket-reply" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme" tag="form" @submit.prevent="onSubmit">
     <v-card-text>
       <v-text-field
         name="input-7-1"
@@ -15,12 +15,14 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn class="primary"><v-icon dark>reply</v-icon> Reply</v-btn>
+      <v-btn class="primary" type="submit"><v-icon dark>reply</v-icon> Reply</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
+  import http from '@/http'
+
   export default {
     name: 'mh-ticket-reply',
 
@@ -36,12 +38,14 @@
       ticket: Object
     },
 
-    created() {
-      this.reply.text = `.@${this.ticket.user.screen_name} `
+    methods: {
+      onSubmit() {
+        return http.twitter.reply(this.ticket, this.reply.text)
+      }
     },
 
-    activated() {
-      console.log(this)
+    created() {
+      this.reply.text = `.@${this.ticket.user.screen_name} `
     }
   }
 </script>

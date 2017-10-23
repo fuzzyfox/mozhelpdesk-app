@@ -61,26 +61,6 @@ export const authenticate = (() => {
           store
             .dispatch('setToken', { token: data.success })
             .then(user => resolve(user))
-            .then(() => {
-              if (http) {
-                const timeout =
-                  store.getters.jwt.exp * 1000 - JWT_REFRESH_OFFSET - Date.now()
-                console.log('auto token refresh in %dms', timeout)
-                return setTimeout(
-                  () =>
-                    http
-                      .get('auth/refresh')
-                      .then(response => response.json())
-                      .then(({ token }) =>
-                        store.dispatch('setToken', {
-                          token,
-                          skipFetchUser: true
-                        })
-                      ),
-                  timeout
-                )
-              }
-            })
         },
         false
       )
@@ -123,7 +103,7 @@ export const authPlugin = {
         return next()
       }
 
-      if (jwt.exp * 1000 - JWT_REFRESH_OFFSET > Date.now()) {
+      if (jwt.exp * 1000 - JWT_REFRESH_OFFSET < Date.now()) {
         return Vue.http
           .get('auth/refresh')
           .then(response => response.json())
@@ -133,7 +113,7 @@ export const authPlugin = {
           .then(() => next(), () => next())
       }
 
-      if (jwt.exp * 1000 >= Date.now()) {
+      if (jwt.exp * 1000 <= Date.now()) {
         return store
           .dispatch('setToken', { token: null, skipFetchUser: true })
           .then(() => next(), () => next())

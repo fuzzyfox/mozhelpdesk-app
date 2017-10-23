@@ -6,6 +6,7 @@
       </div>
 
       <mh-ticket-reply :ticket="ticket"></mh-ticket-reply>
+      <!-- TODO insert a list of replies from the app -->
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
