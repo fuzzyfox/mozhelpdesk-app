@@ -5,9 +5,7 @@
 
 import io from 'socket.io-client'
 
-const twitter = io(process.env.API_ROOT + '/tweet', {
-  transports: ['websocket']
-})
+const twitter = io(process.env.API_ROOT + '/tweet')
 const notes = io(process.env.API_ROOT + '/note', {
   transports: ['websocket']
 })
