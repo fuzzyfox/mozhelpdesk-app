@@ -10,6 +10,7 @@ import VueResource from 'vue-resource'
 
 import * as twitter from './twitter'
 import * as tickets from './tickets'
+import * as slack from './slack'
 
 Vue.use(VueResource)
 
@@ -18,5 +19,6 @@ Vue.http.options.root = process.env.API_ROOT
 export default {
   root: process.env.API_ROOT,
   twitter,
-  tickets
+  tickets,
+  slack
 }

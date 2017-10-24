@@ -6,8 +6,6 @@
 import io from 'socket.io-client'
 
 const twitter = io(process.env.API_ROOT + '/tweet')
-const notes = io(process.env.API_ROOT + '/note', {
-  transports: ['websocket']
-})
+const slack = io(process.env.API_ROOT + '/slack')
 
-export { io, twitter, notes }
+export { io, twitter, slack }
