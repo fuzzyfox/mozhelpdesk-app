@@ -2,12 +2,12 @@
   <div class="mh-ticket">
     <v-layout>
       <v-avatar class="mr-3">
-        <img :src="ticket.user.profile_image_url_https"/>
+        <img :src="ticketAuthor.picture"/>
       </v-avatar>
 
       <v-flex>
-        <strong>{{ ticket.user.name || ticket.user.screen_name }}</strong>
-        <p v-html="ticket.text"></p>
+        <strong>{{ ticketAuthor.name }}</strong>
+        <p v-html="ticketSummary"></p>
       </v-flex>
 
       <v-menu bottom left @click.native.stop>
@@ -32,7 +32,7 @@
     </v-layout>
 
     <v-layout @click.stop class="mh-ticket-actions">
-      <template v-if="ticket.twid || ticket.id_str">
+      <template v-if="isTwitterTicket">
       <v-tooltip top>
         <v-btn flat icon color="green" @click.stop="toggleRetweet(ticket)" slot="activator">
           <v-icon v-if="ticket.retweeted"  color="green">autorenew</v-icon>
@@ -51,80 +51,81 @@
       </template>
 
       <v-tooltip top>
-              <v-dialog v-model="isNotesModalOpen" max-width="50%" slot="activator">
-                <v-btn v-if="(ticket.mozhelp_notes || []).length" slot="activator" flat icon color="orange">
-                  <v-badge right>
-                    <span slot="badge">{{ ticket.mozhelp_notes.length }}</span>
-                    <v-icon>description</v-icon>
-                  </v-badge>
-                </v-btn>
-                <v-btn v-else slot="activator" flat icon color="orange">
-                  <v-icon>note_add</v-icon>
-                </v-btn>
+        <v-dialog v-model="isNotesModalOpen" max-width="50%" slot="activator">
+          <v-btn v-if="(ticket.mozhelp_notes || []).length" slot="activator" flat icon color="orange">
+            <v-badge right>
+              <span slot="badge">{{ ticket.mozhelp_notes.length }}</span>
+              <v-icon>description</v-icon>
+            </v-badge>
+          </v-btn>
+          <v-btn v-else slot="activator" flat icon color="orange">
+            <v-icon>note_add</v-icon>
+          </v-btn>
 
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">Notes</span>
-                  </v-card-title>
+          <v-card>
+            <v-card-title>
+              <span class="headline">Notes</span>
+            </v-card-title>
 
-                  <v-card-text>
-                    <template v-for="note in ticket.mozhelp_notes">
-                      <v-layout :key="note._id" class="mb-3">
-                        <v-avatar class="mr-3">
-                          <img :src="note.user.profile.picture"/>
-                        </v-avatar>
+            <v-card-text>
+              <template v-for="note in ticket.mozhelp_notes">
+                <v-layout :key="note._id" class="mb-3">
+                  <v-avatar class="mr-3">
+                    <img :src="note.user.profile.picture"/>
+                  </v-avatar>
 
-                        <v-flex v-html="note.note.replace(/\n/ig, '<br>')"></v-flex>
+                  <v-flex v-html="note.note.replace(/\n/ig, '<br>')"></v-flex>
 
-                        <v-tooltip top>
-                          <v-chip label slot="activator"><mh-relative-time :timestamp="note.createdAt"></mh-relative-time></v-chip>
-                          <span>{{ moment(note.createdAt).format('ddd Do MMM YYYY @ HH:mm') }}</span>
-                        </v-tooltip>
-                      </v-layout>
-                      <v-divider class="mb-3"></v-divider>
-                    </template>
+                  <v-tooltip top>
+                    <v-chip label slot="activator"><mh-relative-time :timestamp="note.createdAt"></mh-relative-time></v-chip>
+                    <span>{{ moment(note.createdAt).format('ddd Do MMM YYYY @ HH:mm') }}</span>
+                  </v-tooltip>
+                </v-layout>
+                <v-divider class="mb-3"></v-divider>
+              </template>
 
-                    <v-card tag="form" @submit.native.prevent="onNoteSubmit" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme">
-                      <v-card-text>
-                        <v-text-field
-                          name="input-7-1"
-                          label="New Note"
-                          multi-line
-                          v-model="newNote"
-                          :light="$store.state.ui.useDarkTheme"
-                          :dark="!$store.state.ui.useDarkTheme">
-                        </v-text-field>
+              <v-card tag="form" @submit.native.prevent="onNoteSubmit" :light="$store.state.ui.useDarkTheme" :dark="!$store.state.ui.useDarkTheme">
+                <v-card-text>
+                  <v-text-field
+                    name="input-7-1"
+                    label="New Note"
+                    multi-line
+                    v-model="newNote"
+                    :light="$store.state.ui.useDarkTheme"
+                    :dark="!$store.state.ui.useDarkTheme">
+                  </v-text-field>
 
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn class="primary" type="submit">Save</v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-card-text>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn class="primary" type="submit">Save</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-card-text>
 
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn flat @click="isNotesModalOpen = false">Close</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-              <span v-if="(ticket.mozhelp_notes || []).length"> Show ticket notes</span>
-              <span v-else>Add ticket note</span>
-              </v-tooltip>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn flat @click="isNotesModalOpen = false">Close</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-      <v-tooltip v-if="ticket.twid || ticket.id_str" top>
-      <v-btn slot="activator" flat icon @click.stop :href="`https://twitter.com/statuses/${ticket.id_str}`" target="_blank">
+        <span v-if="(ticket.mozhelp_notes || []).length"> Show ticket notes</span>
+        <span v-else>Add ticket note</span>
+      </v-tooltip>
+
+      <v-tooltip top>
+      <v-btn slot="activator" flat icon @click.stop :href="ticketUri" target="_blank">
         <v-icon>open_in_new</v-icon>
       </v-btn>
-      <span>Open Tweet in new window</span>
+      <span>Open in {{ isTwitterTicket ? 'Twitter' : 'Slack'}}</span>
       </v-tooltip>
 
       <v-spacer></v-spacer>
 
       <v-tooltip top>
-        <v-chip label slot="activator"><mh-relative-time :timestamp="ticket.created_at"></mh-relative-time></v-chip>
-        <span>{{ moment(ticket.created_at).format('ddd Do MMM YYYY @ HH:mm') }}</span>
+        <v-chip label slot="activator"><mh-relative-time :timestamp="ticketTimestamp"></mh-relative-time></v-chip>
+        <span>{{ moment(ticketTimestamp).format('ddd Do MMM YYYY @ HH:mm') }}</span>
       </v-tooltip>
     </v-layout>
   </div>
@@ -154,17 +155,76 @@
       ticket: Object
     },
 
+    computed: {
+      isSlackTicket() {
+        return !!this.ticket.channel_id
+      },
+      isTwitterTicket() {
+        return !!(this.twid || this.id_str)
+      },
+      ticketAuthor() {
+        return {
+          name:
+            this.ticket.real_name ||
+            this.ticket.user.name ||
+            this.ticket.screen_name,
+          picture:
+            this.ticket.user.profile_image_url_https ||
+            this.ticket.user.profile.image_48
+        }
+      },
+      ticketSummary() {
+        return (this.ticket.text ||
+          this.ticket.messages.reduce((summary, message, idx) => {
+            if (
+              message.user.id === this.ticket.messages[0].user.id &&
+              summary.length <= 150
+            ) {
+              summary += message.text
+            }
+
+            if (summary.length >= 150 && summary.match(/\.\.\.$/)) {
+              summary = summary.slice(0, 150)
+            }
+
+            return summary
+          }, '')
+        ).replace(/\n/gi, '<br>')
+      },
+      ticketUri() {
+        if (this.isTwitterTicket) {
+          return `https://twitter.com/statuses/${this.ticket.twid ||
+            this.ticket.id_str}`
+        }
+
+        if (this.isSlackTicket) {
+          return 'javascript:;'
+        }
+
+        return 'javascript:;'
+      },
+      ticketTimestamp() {
+        return this.ticket.created_at || this.ticket.createdAt
+      }
+    },
+
     methods: {
       moment,
       mozhelpStatusToIcon,
       mozhelpStatusToColor,
       toggleRetweet(ticket) {
+        if (!this.isTwitterTicket) {
+          return Promise.reject(new Error('Not a Twitter ticket'))
+        }
         return http.twitter
           .toggleRetweet(ticket)
           .then(response => response.json())
           .then(updatedTweet => (ticket.retweeted = updatedTweet.retweeted))
       },
       toggleFavorite(ticket) {
+        if (!this.isTwitterTicket) {
+          return Promise.reject(new Error('Not a Twitter ticket'))
+        }
         return http.twitter
           .toggleFavorite(ticket)
           .then(response => response.json())
@@ -177,15 +237,42 @@
           )
         }
 
-        return http.tickets.updateStatus(ticket._id, status).then(() => {
+        let updateStatus = null
+
+        if (this.isTwitterTicket) {
+          updateStatus = http.tickets.updateStatus
+        }
+
+        if (this.isSlackTicket) {
+          updateStatus = http.slack.updateStatus
+        }
+
+        if (!updateStatus) {
+          return Promise.reject(new Error('Unknown ticket type'))
+        }
+
+        return updateStatus(ticket._id, status).then(() => {
           ticket = Object.assign({}, ticket)
           ticket.mozhelp_status = status.toUpperCase()
           this.$store.dispatch('saveTicket', ticket)
         })
       },
       onNoteSubmit() {
-        return http.tickets
-          .createNote(this.ticket._id, this.newNote)
+        let createNote = null
+
+        if (this.isTwitterTicket) {
+          createNote = http.tickets.createNote
+        }
+
+        if (this.isSlackTicket) {
+          createNote = http.slack.createNote
+        }
+
+        if (!createNote) {
+          return Promise.reject(new Error('Unknown ticket type'))
+        }
+
+        return createNote(this.ticket._id, this.newNote)
           .then(res => res.json())
           .then(({ _id }) => {
             this.ticket.mozhelp_notes.push({
